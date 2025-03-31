@@ -1,0 +1,116 @@
+@media print {
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        /* For Firefox */
+        min-width: 768px !important;
+    }
+
+    /* Ensure borders and backgrounds print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        /* For Firefox */
+    }
+
+    /* Maintain table borders */
+    table {
+        border-collapse: collapse !important;
+    }
+
+    /* Force background colors to print */
+    .bg-teal-600 {
+        background-color: #0d9488 !important;
+    }
+
+    .bg-teal-50 {
+        background-color: #f0fdfa !important;
+    }
+
+    /* Ensure text colors print properly */
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    .text-teal-700 {
+        color: #0f766e !important;
+    }
+
+    .text-teal-600 {
+        color: #0d9488 !important;
+    }
+
+    .text-gray-600 {
+        color: #4b5563 !important;
+    }
+
+    .text-gray-800 {
+        color: #1f2937 !important;
+    }
+
+    .text-gray-900 {
+        color: #111827 !important;
+    }
+
+    /* Ensure borders print properly */
+    .border-teal-200 {
+        border-color: #99f6e4 !important;
+    }
+
+    .border-teal-300 {
+        border-color: #5eead4 !important;
+    }
+
+    /* Adjust invoice layout for printing */
+    .invoice-card {
+        padding: 0.5rem;
+        box-shadow: none;
+    }
+
+    .download-button {
+        display: none;
+        /* Hide download button when printing */
+    }
+}
+
+/* Styles for PDF View */
+.print-pdf {
+    background-color: white;
+}
+
+.invoice-container {
+    background-color: white;
+}
+
+.invoice-card {
+    width: 100%;
+    max-width: 56rem;
+    /* equivalent to max-w-4xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+    font-size: 0.875rem;
+    /* equivalent to text-sm */
+}
+
+/* Button styling */
+.download-button {
+    margin-bottom: 1rem;
+    background-color: #0d9488;
+    /* teal-600 */
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.download-button:hover {
+    background-color: #0f766e;
+    /* teal-700 */
+}

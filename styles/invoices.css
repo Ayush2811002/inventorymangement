@@ -1,0 +1,42 @@
+@media print {
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        min-width: 768px !important;
+    }
+
+    /* Ensure borders and backgrounds print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Maintain table borders */
+    table {
+        border-collapse: collapse !important;
+    }
+
+    /* Force background colors to print */
+    .bg-teal-600 {
+        background-color: #0d9488 !important;
+    }
+
+    .bg-teal-50 {
+        background-color: #f0fdfa !important;
+    }
+
+    .invoice-card {
+        padding: 0.5rem;
+        box-shadow: none;
+    }
+
+    .download-button {
+        display: none;
+    }
+}
+
+/* Additional print styles for .print-pdf */
+.print-pdf {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
