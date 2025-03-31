@@ -4,16 +4,12 @@
 import type React from "react"
 
 import "@/app/globals.css"
-// import { Inter } from "next/font/google"
 import Sidebar from "@/components/Sidebar"
 import Header from "@/components/Header"
 import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/components/auth/auth-provider"
 import LoadingScreen from "@/components/LoadingScreen"
-
-// const inter = Inter({ subsets: ["latin"] })
-
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
