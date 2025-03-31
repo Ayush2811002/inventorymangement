@@ -29,7 +29,8 @@ type Invoice = {
   paymentStatus: string;
   products?: {
     qty: number;
-    hsnCode: String;
+  hsnCode: string; // ✅ Correct
+
     price: number;
     description: string;
   }[]; // Match the expected type
@@ -42,7 +43,7 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
@@ -50,14 +51,20 @@ export default function InvoicesPage() {
         const data = snapshot.val();
 
         if (data && typeof data === "object") {
-          const today = new Date();
+          // const today = new Date();
           const invoicesData: Invoice[] = Object.entries(data).map(
             ([id, invoiceData]) => {
               const invoice = { ...(invoiceData as Invoice), id };
-              const invoiceDate = new Date(invoice.invoiceDate);
+              // const invoiceDate = new Date(invoice.invoiceDate);
               // Extract grandTotal from taxes if it exists
               // Ensure grandTotal is fetched safely from taxes
-              const grandTotal = (invoice as any)?.taxes?.grandTotal ?? 0;
+              // const grandTotal = (invoice as any)?.taxes?.grandTotal ?? 0;
+              interface Taxes {
+  grandTotal?: number;
+}
+
+              const grandTotal = (invoice as unknown as { taxes?: Taxes })?.taxes?.grandTotal ?? 0;
+
               // Check if the invoice is overdue
               // if (invoice.paymentStatus === "due" && today > invoiceDate) {
               //   invoice.paymentStatus = "overdue";

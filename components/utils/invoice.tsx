@@ -1,15 +1,15 @@
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import Image from "next/image";
 import Logo from "@/components/ui/final.png"; // Update the path accordingly
-import jsPDF from "jspdf";
+// import jsPDF from "jspdf";
 import "jspdf-autotable"; // If you want tables to be formatted properly
-import { useRef } from "react";
-import { db } from "@/components/utils/firebaseConfig"; // Adjust path if needed
-import { ref, get } from "firebase/database";
-import { Download, Printer } from "lucide-react";  // Add Printer to imports
-import html2canvas from "html2canvas";
-import { Button } from "@/components/ui/button"; // Assuming you're using shadcn/ui
+// import { useRef } from "react";
+// import { db } from "@/components/utils/firebaseConfig"; // Adjust path if needed
+// import { ref, get } from "firebase/database";
+// import { Download, Printer } from "lucide-react";  // Add Printer to imports
+// import html2canvas from "html2canvas";
+// import { Button } from "@/components/ui/button"; // Assuming you're using shadcn/ui
 
 <Image
   src={Logo}
@@ -45,7 +45,7 @@ type Invoice = {
   };
 };
 export default function Invoice({
-  id,
+  // id,
   billTo,
   billingAddress,
   Phoneno,
@@ -53,8 +53,8 @@ export default function Invoice({
   gstin,
   invoiceDate,
   invoiceNumber,
-  paidOn,
-  paymentStatus,
+  // paidOn,
+  // paymentStatus,
   products = [],
   shippingAddress,
   taxes,

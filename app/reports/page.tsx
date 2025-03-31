@@ -7,6 +7,14 @@ import { db } from "@/components/utils/firebaseConfig";
 import { ref, get } from "firebase/database";
 import * as XLSX from "xlsx";
 
+interface Invoice {
+  invoiceDate: string;
+  paymentStatus: string;
+  taxes?: {
+    grandTotal?: number;
+  };
+}
+
 export default function ReportsPage() {
   const [monthlyRevenue, setMonthlyRevenue] = useState<{ name: string; revenue: number; pending: number }[]>([]);
   const [invoiceStatus, setInvoiceStatus] = useState<{ status: string; count: number }[]>([]);
@@ -20,54 +28,43 @@ export default function ReportsPage() {
         const data = snapshot.val();
 
         if (data) {
-          const invoices = Object.values(data);
+          const invoices: Invoice[] = Object.values(data) as Invoice[];
           const revenueByMonth: { [key: string]: { revenue: number; pending: number } } = {};
-          const statusCounts: { [key: string]: number } = {
-            Paid: 0,
-            Pending: 0,
-            // Overdue: 0
-          };
+          const statusCounts: { [key: string]: number } = { Paid: 0, Pending: 0 };
           let totalRevenueSum = 0;
           let totalPendingSum = 0;
 
-          invoices.forEach((invoice: any) => {
+          invoices.forEach((invoice) => {
             const month = new Date(invoice.invoiceDate).toLocaleString("en-US", { month: "short" });
             if (!revenueByMonth[month]) {
               revenueByMonth[month] = { revenue: 0, pending: 0 };
             }
-            
-            if (invoice.paymentStatus.toLowerCase() === "paid") {
-              revenueByMonth[month].revenue += invoice.taxes?.grandTotal || 0;
-              totalRevenueSum += invoice.taxes?.grandTotal || 0;
-            } else if (invoice.paymentStatus.toLowerCase() === "pending") {
-              revenueByMonth[month].pending += invoice.taxes?.grandTotal || 0;
-              totalPendingSum += invoice.taxes?.grandTotal || 0;
-            }
 
+            const grandTotal = invoice.taxes?.grandTotal || 0;
             if (invoice.paymentStatus.toLowerCase() === "paid") {
+              revenueByMonth[month].revenue += grandTotal;
+              totalRevenueSum += grandTotal;
               statusCounts.Paid += 1;
             } else if (invoice.paymentStatus.toLowerCase() === "pending") {
+              revenueByMonth[month].pending += grandTotal;
+              totalPendingSum += grandTotal;
               statusCounts.Pending += 1;
             }
-            // } else {
-            //   statusCounts.Overdue += 1;
-            // }
           });
 
-          const revenueData = Object.keys(revenueByMonth).map((month) => ({
-            name: month,
-            revenue: revenueByMonth[month].revenue,
-            pending: revenueByMonth[month].pending
-          }));
+          setMonthlyRevenue(
+            Object.keys(revenueByMonth).map((month) => ({
+              name: month,
+              revenue: revenueByMonth[month].revenue,
+              pending: revenueByMonth[month].pending,
+            }))
+          );
 
-          const statusData = [
+          setInvoiceStatus([
             { status: "Paid", count: statusCounts.Paid },
-            { status: "Pending", count: statusCounts.Pending }
-            // { status: "Overdue", count: statusCounts.Overdue }
-          ];
+            { status: "Pending", count: statusCounts.Pending },
+          ]);
 
-          setMonthlyRevenue(revenueData);
-          setInvoiceStatus(statusData);
           setTotalRevenue(totalRevenueSum);
           setTotalPending(totalPendingSum);
         }
@@ -84,12 +81,11 @@ export default function ReportsPage() {
       ...monthlyRevenue.map((item) => ({
         Month: item.name,
         "Revenue (₹)": item.revenue,
-        "Pending (₹)": item.pending
+        "Pending (₹)": item.pending,
       })),
       {},
       { Status: "Paid", Count: invoiceStatus.find((s) => s.status === "Paid")?.count || 0 },
-      { Status: "Pending", Count: invoiceStatus.find((s) => s.status === "Pending")?.count || 0 }
-      // { Status: "Overdue", Count: invoiceStatus.find((s) => s.status === "Overdue")?.count || 0 }
+      { Status: "Pending", Count: invoiceStatus.find((s) => s.status === "Pending")?.count || 0 },
     ]);
 
     const workbook = XLSX.utils.book_new();
