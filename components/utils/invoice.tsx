@@ -282,9 +282,9 @@ export default function Invoice({
           <p className="text-right mb-3 italic text-xs text-gray-600">
             for Shwetshree Enterprises
           </p>
-          <p className="text-xs font-semibold text-teal-700 mb-2">
-            Please Make the Cheque in Favour of "Shwetshree Enterprises"
-          </p>
+        <p className="text-xs font-semibold text-teal-700 mb-2">
+  Please Make the Cheque in Favour of &quot;Shwetshree Enterprises&quot;
+</p>
           <p className="text-xs font-medium text-gray-700">
             <span className="font-bold"> RTGS/NEFT Details:</span>
           </p>
