@@ -45,12 +45,14 @@ export default function ViewInvoicePage() {
         const parsedData: Partial<InvoiceData> = JSON.parse(decodeURIComponent(dataString));
 
         // Convert products to match the expected type
-        const products: Product[] = (parsedData.products || []).map((product: any) => ({
-          qty: String(product.qty || 0),
-          price: String(product.price || 0),
-          description: product.description || "N/A",
-          hsnCode: product.hsnCode || "000000",
-        }));
+  // Convert products to match the expected type
+const products: Product[] = (parsedData.products as Partial<Product>[] || []).map((product) => ({
+  qty: String(product.qty || 0),
+  price: String(product.price || 0),
+  description: product.description || "",
+  hsnCode: product.hsnCode || "",
+}));
+
 
         // Calculate total amount
         const totalAmount = products.reduce(
