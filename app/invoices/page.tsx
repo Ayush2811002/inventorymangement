@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -139,7 +139,7 @@ export default function InvoicesPage() {
   const handleUpdate = async () => {
     if (!selectedInvoice) return;
 
-    const today = new Date();
+    // const today = new Date();
     const invoiceDate = new Date(selectedInvoice.invoiceDate);
     const paidOn = selectedInvoice.paidOn
       ? new Date(selectedInvoice.paidOn)
