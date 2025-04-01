@@ -1,30 +1,67 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation"; // Import this hook
+import { useSearchParams } from "next/navigation";
 import Invoice from "@/components/utils/invoice";
+
+interface Product {
+  qty: string;
+  price: string;
+  description: string;
+  hsnCode: string;
+}
+
+interface Taxes {
+  sgst: number;
+  cgst: number;
+  igst: number;
+  totalTax: number;
+  grandTotal: number;
+}
+
+interface InvoiceData {
+  id: string;
+  billTo: string;
+  billingAddress: string;
+  Phoneno: number;
+  SPhoneno: number;
+  gstin: string;
+  invoiceDate: string;
+  invoiceNumber: number;
+  paymentStatus: string;
+  shippingAddress: string;
+  products: Product[];
+  taxes: Taxes;
+  totalAmount: number;
+}
 
 export default function ViewInvoicePage() {
   const searchParams = useSearchParams();
-  const [invoiceData, setInvoiceData] = useState<Record<string, any> | null>(
-    null
-  );
+  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
 
   useEffect(() => {
     const dataString = searchParams.get("data");
     if (dataString) {
       try {
-        const parsedData = JSON.parse(decodeURIComponent(dataString));
+        const parsedData: Partial<InvoiceData> = JSON.parse(decodeURIComponent(dataString));
+
+        // Convert products to match the expected type
+        const products: Product[] = (parsedData.products || []).map((product: any) => ({
+          qty: String(product.qty || 0),
+          price: String(product.price || 0),
+          description: product.description || "N/A",
+          hsnCode: product.hsnCode || "000000",
+        }));
+
         // Calculate total amount
-        const totalAmount = parsedData.products.reduce(
-          (total: number, product: { qty: number; price: number }) =>
-            total + product.qty * product.price,
+        const totalAmount = products.reduce(
+          (total, product) => total + parseFloat(product.qty) * parseFloat(product.price),
           0
         );
 
         // Extract tax rates
-        const sgstRate = parsedData.taxes?.sgst || 0;
-        const cgstRate = parsedData.taxes?.cgst || 0;
-        const igstRate = parsedData.taxes?.igst || 0;
+        const sgstRate = parsedData.taxes?.sgst ?? 0;
+        const cgstRate = parsedData.taxes?.cgst ?? 0;
+        const igstRate = parsedData.taxes?.igst ?? 0;
 
         // Calculate taxes
         const sgstAmount = (sgstRate / 100) * totalAmount;
@@ -32,16 +69,27 @@ export default function ViewInvoicePage() {
         const igstAmount = (igstRate / 100) * totalAmount;
         const totalTax = sgstAmount + cgstAmount + igstAmount;
         const grandTotal = totalAmount + totalTax;
-        // Set updated data
+
+        // Set updated data with default values for missing fields
         setInvoiceData({
-          ...parsedData,
+          id: parsedData.id || "",
+          billTo: parsedData.billTo || "",
+          billingAddress: parsedData.billingAddress || "",
+          Phoneno: parsedData.Phoneno || 0,
+          SPhoneno: parsedData.SPhoneno || 0,
+          gstin: parsedData.gstin || "",
+          invoiceDate: parsedData.invoiceDate || "",
+          invoiceNumber: parsedData.invoiceNumber || 0,
+          paymentStatus: parsedData.paymentStatus || "",
+          shippingAddress: parsedData.shippingAddress || "",
+          products,
           taxes: {
             sgst: sgstAmount,
             cgst: cgstAmount,
             igst: igstAmount,
             totalTax,
             grandTotal,
-          },
+          }, // Ensures all fields are assigned
           totalAmount,
         });
       } catch (error) {
@@ -50,12 +98,13 @@ export default function ViewInvoicePage() {
     }
   }, [searchParams]);
 
-  if (!invoiceData || typeof invoiceData !== "object") {
+  if (!invoiceData) {
     return <p>Loading invoice...</p>;
   }
 
-  return <Invoice id={""} billTo={""} billingAddress={""} Phoneno={0} SPhoneno={0} gstin={""} invoiceDate={""} invoiceNumber={0} paymentStatus={""} shippingAddress={""} {...invoiceData} />;
+  return <Invoice {...invoiceData} />;
 }
+
 
 
 // "use client";
