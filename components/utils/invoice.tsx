@@ -10,6 +10,7 @@ import "jspdf-autotable"; // If you want tables to be formatted properly
 // import { Download, Printer } from "lucide-react";  // Add Printer to imports
 // import html2canvas from "html2canvas";
 // import { Button } from "@/components/ui/button"; // Assuming you're using shadcn/ui
+import * as numberToWords from "number-to-words";
 
 <Image
   src={Logo}
@@ -67,7 +68,7 @@ export default function Invoice({
   const grandTotal = taxes?.grandTotal || 0;
   const roundedTotal = Math.round(grandTotal);
   const roundOff = (roundedTotal - grandTotal).toFixed(2);
-  const numberToWords = require("number-to-words");
+  // const numberToWords = require("number-to-words");
 
   const convertToIndianFormat = (num: number) => {
     if (num < 100000) {

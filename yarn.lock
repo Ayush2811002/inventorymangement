@@ -1125,6 +1125,11 @@
   dependencies:
     undici-types "~6.19.2"
 
+"@types/number-to-words@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@types/number-to-words/-/number-to-words-1.2.3.tgz#8011d16242a3e7b193a0622041be98445548338d"
+  integrity sha512-ruSA/QZ6JQofoEEN2zKmN9oihZmrCBgcw0zEzN0UA9Mw0pU5remTddZmrbHjsa99qz12Uxl82x+XkVpHu87oXw==
+
 "@types/prop-types@*":
   version "15.7.14"
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.14.tgz"
