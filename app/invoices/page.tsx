@@ -24,6 +24,7 @@ type Invoice = {
   billingAddress: string;
   gstin: string;
   invoiceDate: string;
+    billingDate: string; // ✅ Added
   invoiceNumber: number;
   paidOn?: string;
   paymentStatus: string;
@@ -70,7 +71,7 @@ export default function InvoicesPage() {
               //   invoice.paymentStatus = "overdue";
               //   update(ref(db, `invoices/${id}`), { paymentStatus: "overdue" }); // Update Firebase
               // }
-              return { ...invoice, grandTotal };
+              return { ...invoice, grandTotal,    billingDate: invoice.billingDate || "N/A" };
             }
           );
 
@@ -216,6 +217,7 @@ export default function InvoicesPage() {
                   <TableHead className="text-gray-400">Status</TableHead>
                   <TableHead className="text-gray-400">Paid On</TableHead>
                   <TableHead className="text-gray-400">Invoice Date</TableHead>
+                  <TableHead className="text-gray-400">Billing Date</TableHead>
                   <TableHead className="text-gray-400 text-center">
                     Actions
                   </TableHead>
@@ -263,6 +265,9 @@ export default function InvoicesPage() {
                     </TableCell>
                     <TableCell className="text-gray-300">
                       {invoice.invoiceDate}
+                    </TableCell>
+                         <TableCell className="text-gray-300">
+                      {invoice.billingDate}
                     </TableCell>
                     <TableCell className="flex space-x-2">
                       <Button

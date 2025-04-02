@@ -39,6 +39,13 @@ export default function NewInvoicePage() {
   console.log("📅 Adjusted Invoice Date:", formattedDate);
   return formattedDate;
 });
+const [billingDate] = useState(() => {
+  const today = new Date();
+  today.setMinutes(today.getMinutes() + 330 - today.getTimezoneOffset()); // Convert to IST (UTC+5:30)
+  return today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+});
+
+
 
 
   const [paymentStatus, setPaymentStatus] = useState("Pending"); // Default to "due"
@@ -266,6 +273,7 @@ useEffect(() => {
       SPhoneno,
       gstin,
       invoiceDate,
+        billingDate, // ✅ New Billing Date (stored separately)
       products,
       createdAt: new Date().toISOString(),
       paymentStatus, // ✅ Add Payment Status
@@ -395,7 +403,17 @@ useEffect(() => {
   className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
 />
      </div>
-     
+ <div className="space-y-2">
+   <label className="text-white">Billing Date</label>
+  <input
+    type="date"
+    value={billingDate}
+    readOnly
+    className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full opacity-70 cursor-not-allowed"
+  />
+</div>
+
+
 
             {/* Products Section */}
             <h2 className="text-xl font-semibold text-white mt-6">Products</h2>
