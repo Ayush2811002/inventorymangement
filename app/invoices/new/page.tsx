@@ -32,13 +32,14 @@ export default function NewInvoicePage() {
 
   const [gstin, setGstin] = useState("");
   // const [invoiceDate] = useState(new Date().toISOString().split("T")[0]); // Auto-fetch date
-  const [invoiceDate] = useState(() => {
-    const today = new Date();
-    today.setMinutes(today.getMinutes() - today.getTimezoneOffset()); // Adjust for local timezone
-    const formattedDate = today.toISOString().split("T")[0];
-    console.log("📅 Adjusted Invoice Date:", formattedDate);
-    return formattedDate;
-  });
+  const [invoiceDate, setInvoiceDate] = useState(() => {
+  const today = new Date();
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset()); // Adjust for local timezone
+  const formattedDate = today.toISOString().split("T")[0];
+  console.log("📅 Adjusted Invoice Date:", formattedDate);
+  return formattedDate;
+});
+
 
   const [paymentStatus, setPaymentStatus] = useState("Pending"); // Default to "due"
   const [paidOn, setPaidOn] = useState(""); // Empty initially
@@ -387,12 +388,14 @@ useEffect(() => {
 
             <div className="space-y-2">
               <Label className="text-gray-300">Invoice Date</Label>
-              <Input
-                value={invoiceDate}
-                readOnly
-                className="bg-gray-700 text-white border-gray-600"
-              />
-            </div>
+          <input
+  type="date"
+  value={invoiceDate}
+  onChange={(e) => setInvoiceDate(e.target.value)}
+  className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+     </div>
+     
 
             {/* Products Section */}
             <h2 className="text-xl font-semibold text-white mt-6">Products</h2>
