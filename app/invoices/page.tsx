@@ -941,13 +941,8 @@ const paginatedInvoices = filteredInvoices.slice(
                 <Select
                   value={selectedInvoice.paymentStatus}
                   onValueChange={(value) =>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-handleChange({
-  target: { name: "paymentStatus", value },
-} as any)
-
-}
-                >
+                    handleChange({
+                      target: { name: "paymentStatus", value },} as any)}>
                   <SelectTrigger className="bg-gray-800 border-gray-700">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
