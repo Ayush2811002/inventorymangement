@@ -88,7 +88,6 @@ export default function InvoicesPage() {
     fetchInvoices()
   }, [])
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
 useEffect(() => {
   applyFilters()
 }, [invoices, searchQuery, statusFilter, dateRange, sortConfig, activeTab])
@@ -217,100 +216,6 @@ useEffect(() => {
       }
     }
   }
-// const handleBulkExportPDF = async () => {
-//   if (selectedInvoices.length === 0) {
-//     Swal.fire("No Invoices Selected", "Please select at least one invoice to export.", "info");
-//     return;
-//   }
-
-//   for (const invoiceId of selectedInvoices) {
-//     try {
-//       // Fetch invoice data from Firebase for each selected invoice
-//       const snapshot = await get(ref(db, `invoices/${invoiceId}`));
-//       const invoice = snapshot.val();
-
-//       if (!invoice) {
-//         console.warn(`Invoice with ID ${invoiceId} not found.`);
-//         continue; // Skip if the invoice is not found
-//       }
-
-//       // Convert the invoice data to a URL-friendly string for query params
-//       const invoiceDataString = encodeURIComponent(JSON.stringify(invoice));
-
-//       // Open a new window for each invoice, displaying the invoice PDF preview
-//       const newWindow = window.open(
-//         `/view-invoice?data=${invoiceDataString}`,
-//         "_blank",
-//         "width=800,height=600"
-//       );
-
-//       if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
-//         Swal.fire({
-//           icon: "warning",
-//           title: "Popup Blocked",
-//           text: "Please allow popups for this site in your browser settings.",
-//         });
-//         break; // Stop the loop if popups are blocked
-//       }
-
-//       // Optional: small delay to avoid triggering popup blockers (you can adjust delay)
-//       await new Promise((res) => setTimeout(res, 300));
-
-//     } catch (error) {
-//       console.error(`Error fetching invoice ${invoiceId}:`, error);
-//     }
-//   }
-// };
-// const handleBulkExportPDF = async () => {
-//   if (selectedInvoices.length === 0) {
-//     Swal.fire("No Invoices Selected", "Please select at least one invoice to export.", "info");
-//     return;
-//   }
-
-//   try {
-//     const invoiceDataArray = [];
-
-//     for (const invoiceId of selectedInvoices) {
-//       const snapshot = await get(ref(db, `invoices/${invoiceId}`));
-//       const invoice = snapshot.val();
-
-//       if (!invoice) {
-//         console.warn(`Invoice with ID ${invoiceId} not found.`);
-//         continue;
-//       }
-
-//       invoiceDataArray.push(invoice);
-//     }
-
-//     if (invoiceDataArray.length === 0) {
-//       Swal.fire("No Valid Invoices", "None of the selected invoices could be loaded.", "warning");
-//       return;
-//     }
-
-//     // Encode the full array
-//     const dataString = encodeURIComponent(JSON.stringify(invoiceDataArray));
-
-// // Open just one window with all invoices
-// const newWindow = window.open(
-//   `/view-invoice/bulk?data=${dataString}`,
-//   "_blank",
-//   "width=1000,height=700"
-// );
-
-
-
-//     if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
-//       Swal.fire({
-//         icon: "warning",
-//         title: "Popup Blocked",
-//         text: "Please allow popups for this site in your browser settings.",
-//       });
-//     }
-
-//   } catch (error) {
-//     console.error("Error during bulk invoice export:", error);
-//   }
-// };
 const [currentPage, setCurrentPage] = useState(1);
 const [rowsPerPage, setRowsPerPage] = useState(10);
 
