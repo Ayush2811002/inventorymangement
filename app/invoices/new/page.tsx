@@ -40,11 +40,16 @@ export default function NewInvoicePage() {
   return formattedDate;
 });
 const [billingDate] = useState(() => {
-  const today = new Date();
-  today.setMinutes(today.getMinutes() + 330 - today.getTimezoneOffset()); // Convert to IST (UTC+5:30)
-  return today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-});
+  const now = new Date();
+  const istOffset = 330; // IST is UTC+5:30
+  const localTime = new Date(now.getTime() + (istOffset + now.getTimezoneOffset()) * 60000);
 
+  const year = localTime.getFullYear();
+  const month = String(localTime.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+  const day = String(localTime.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+});
 
 
 
