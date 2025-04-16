@@ -1,6 +1,12 @@
 "use client"
 
 import type React from "react"
+type SimulatedChangeEvent = {
+  target: {
+    name: string
+    value: string
+  }
+}
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -306,8 +312,8 @@ const paginatedInvoices = filteredInvoices.slice(
     setSelectedInvoice(invoice)
     setShowModal(true)
   }
+const handleChange = (e: SimulatedChangeEvent) => {
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     if (!selectedInvoice) return
 
     const { name, value } = e.target
@@ -940,9 +946,12 @@ const paginatedInvoices = filteredInvoices.slice(
                 <label className="text-sm font-medium text-gray-300">Payment Status</label>
                 <Select
                   value={selectedInvoice.paymentStatus}
-                  onValueChange={(value) =>
-                    handleChange({
-                      target: { name: "paymentStatus", value },} as any)}>
+onValueChange={(value) =>
+  handleChange({
+    target: { name: "paymentStatus", value },
+  })
+}
+>
                   <SelectTrigger className="bg-gray-800 border-gray-700">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
