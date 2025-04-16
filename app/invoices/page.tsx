@@ -1063,7 +1063,8 @@ const paginatedInvoices = filteredInvoices.slice(
                   disabled={selectedInvoice.paymentStatus !== "paid"}
                 />
                 {selectedInvoice.paymentStatus !== "paid" && (
-                  <p className="text-xs text-gray-500">Set status to "Paid" to enable date selection</p>
+      <p className="text-xs text-gray-500">Set status to &quot;Paid&quot; to enable date selection</p>
+
                 )}
               </div>
             </div>
