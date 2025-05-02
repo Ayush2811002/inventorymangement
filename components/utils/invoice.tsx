@@ -24,7 +24,7 @@ type Invoice = {
   billTo: string;
   billingAddress: string;
   Phoneno: number;
-  SPhoneno:number;
+  SPhoneno: number;
   gstin: string;
   invoiceDate: string;
   invoiceNumber: number;
@@ -93,11 +93,8 @@ export default function Invoice({
     ) + " Rupees Only";
 
   return (
-
-
-  <Card className="w-full max-w-4xl mx-auto p-4 print:p-2 print:shadow-none print:border-0 bg-white text-sm">
-
-    {/* // <Card className="w-full max-w-4xl mx-auto p-4 print:p-2 print:shadow-none bg-white text-sm"> */}
+    <Card className="w-full max-w-4xl mx-auto p-4 print:p-2 print:shadow-none print:border-0 bg-white text-sm">
+      {/* // <Card className="w-full max-w-4xl mx-auto p-4 print:p-2 print:shadow-none bg-white text-sm"> */}
       {/* Header */}
       <div className="flex items-start justify-between mb-6 gap-4 border-b border-teal-200 pb-4">
         <div className="flex items-center gap-3">
@@ -136,8 +133,7 @@ export default function Invoice({
           <p className="text-xs text-gray-600">
             <span className="font-semibold">GSTIN:</span> {gstin}
           </p>
-           <p className="text-xs text-gray-600">Phoneno:{Phoneno}</p>
-
+          <p className="text-xs text-gray-600">Phone No: {Phoneno}</p>
         </div>
         <div className="border rounded p-3 border-teal-200">
           <h2 className="text-sm font-semibold text-teal-700 mb-1">
@@ -147,9 +143,10 @@ export default function Invoice({
             Shipping Address
           </h2>
           <p className="text-xs text-gray-600 mb-1">{shippingAddress}</p>
-          <p className="text-xs text-gray-600"><span className="font-semibold">GSTIN:</span> {gstin}</p>
-             <p className="text-xs text-gray-600">Phoneno:{SPhoneno}</p>
-
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold">GSTIN:</span> {gstin}
+          </p>
+          <p className="text-xs text-gray-600">Phone No: {SPhoneno}</p>
         </div>
       </div>
       {/* Invoice Details */}
@@ -164,11 +161,11 @@ export default function Invoice({
           <h3 className="text-xs font-medium text-teal-700 mb-1">
             Payment Terms
           </h3>
-          <p className="text-xs text-gray-800">{}</p>
+          <p className="text-xs text-gray-800">N/A</p>
         </div>
         <div className="border rounded p-3 border-teal-200">
           <h3 className="text-xs font-medium text-teal-700 mb-1">Due Date</h3>
-          <p className="text-xs text-gray-800">{}</p>
+          <p className="text-xs text-gray-800">N/A</p>
         </div>
       </div>
       {/* Items Table */}
@@ -239,15 +236,34 @@ export default function Invoice({
               <p className="text-right font-medium text-gray-800">
                 ₹{freightCharges.toFixed(2)}
               </p> */}
-            <p className="text-gray-600">SGST @ {}%</p>
+            <p className="text-gray-600">
+              SGST{" "}
+              {taxes?.sgst && totalAmount
+                ? ((taxes.sgst / totalAmount) * 100).toFixed(1)
+                : "0.00"}
+              %
+            </p>
+
             <p className="text-right font-medium text-gray-800">
               ₹{taxes?.sgst?.toFixed(2)}
             </p>
-            <p className="text-gray-600">CGST @ {}%</p>
+            <p className="text-gray-600">
+              CGST{" "}
+              {taxes?.cgst && totalAmount
+                ? ((taxes.cgst / totalAmount) * 100).toFixed(1)
+                : "0.00"}
+              %
+            </p>
             <p className="text-right font-medium text-gray-800">
               ₹{taxes?.cgst?.toFixed(2)}
             </p>
-            <p className="text-gray-600">IGST @ {}%</p>
+            <p className="text-gray-600">
+              IGST{" "}
+              {taxes?.igst && totalAmount
+                ? ((taxes.igst / totalAmount) * 100).toFixed(1)
+                : "0.00"}
+              %
+            </p>
             <p className="text-right font-medium text-gray-800">
               ₹{taxes?.igst?.toFixed(2)}
             </p>
@@ -282,9 +298,10 @@ export default function Invoice({
           <p className="text-right mb-3 italic text-xs text-gray-600">
             for Shwetshree Enterprises
           </p>
-        <p className="text-xs font-semibold text-teal-700 mb-2">
-  Please Make the Cheque in Favour of &quot;Shwetshree Enterprises&quot;
-</p>
+          <p className="text-xs font-semibold text-teal-700 mb-2">
+            Please Make the Cheque in Favour of &quot;Shwetshree
+            Enterprises&quot;
+          </p>
           <p className="text-xs font-medium text-gray-700">
             <span className="font-bold"> RTGS/NEFT Details:</span>
           </p>
