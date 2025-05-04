@@ -24,6 +24,7 @@ interface Product {
 
 interface Invoice {
   invoiceDate: string;
+  invoiceNumber: string;
   paymentStatus: string;
   products?: Product[];
   taxes?: {
@@ -41,6 +42,9 @@ export default function ReportsPage() {
       tax: number;
       qty: number;
       taxable: number;
+      invoiceCount: number;
+      totalInvoices: number;
+      invoiceRange: string;
     }[]
   >([]);
   const [invoiceStatus, setInvoiceStatus] = useState<
@@ -60,6 +64,7 @@ export default function ReportsPage() {
 
         if (data) {
           const invoices: Invoice[] = Object.values(data) as Invoice[];
+
           const revenueByMonth: {
             [key: string]: {
               revenue: number;
@@ -67,12 +72,16 @@ export default function ReportsPage() {
               tax: number;
               qty: number;
               taxable: number;
+              invoiceNumbers: string[];
+              paidInvoiceNumbers: string[];
             };
           } = {};
+
           const statusCounts: { [key: string]: number } = {
             Paid: 0,
             Pending: 0,
           };
+
           let totalRevenueSum = 0;
           let totalPendingSum = 0;
           let totalTaxSum = 0;
@@ -82,8 +91,12 @@ export default function ReportsPage() {
           invoices.forEach((invoice) => {
             const month = new Date(invoice.invoiceDate).toLocaleString(
               "en-US",
-              { month: "short" }
+              {
+                month: "short",
+                year: "numeric",
+              }
             );
+
             if (!revenueByMonth[month]) {
               revenueByMonth[month] = {
                 revenue: 0,
@@ -91,6 +104,8 @@ export default function ReportsPage() {
                 tax: 0,
                 qty: 0,
                 taxable: 0,
+                invoiceNumbers: [],
+                paidInvoiceNumbers: [],
               };
             }
 
@@ -108,12 +123,17 @@ export default function ReportsPage() {
             revenueByMonth[month].qty += qtySum;
             totalQtySum += qtySum;
 
+            const invoiceNo = invoice.invoiceNumber || "";
+
+            revenueByMonth[month].invoiceNumbers.push(invoiceNo);
+
             if (invoice.paymentStatus.toLowerCase() === "paid") {
               revenueByMonth[month].revenue += grandTotal;
               totalRevenueSum += grandTotal;
               totalTaxSum += taxTotal;
               revenueByMonth[month].taxable += taxableAmount;
               totalTaxableSum += taxableAmount;
+              revenueByMonth[month].paidInvoiceNumbers.push(invoiceNo);
               statusCounts.Paid += 1;
             } else if (invoice.paymentStatus.toLowerCase() === "pending") {
               revenueByMonth[month].pending += grandTotal;
@@ -124,16 +144,34 @@ export default function ReportsPage() {
             revenueByMonth[month].tax += taxTotal;
           });
 
-          setMonthlyRevenue(
-            Object.keys(revenueByMonth).map((month) => ({
-              name: month,
-              revenue: parseFloat(revenueByMonth[month].revenue.toFixed(2)),
-              pending: parseFloat(revenueByMonth[month].pending.toFixed(2)),
-              tax: parseFloat(revenueByMonth[month].tax.toFixed(2)),
-              qty: revenueByMonth[month].qty,
-              taxable: parseFloat(revenueByMonth[month].taxable.toFixed(2)),
-            }))
+          const formattedMonthlyData = Object.keys(revenueByMonth).map(
+            (month) => {
+              const sortedInvoices =
+                revenueByMonth[month].paidInvoiceNumbers.sort();
+              const sortedAllInvoices =
+                revenueByMonth[month].invoiceNumbers.sort();
+              const range =
+                sortedAllInvoices.length > 0
+                  ? `${sortedAllInvoices[0]} - ${
+                      sortedAllInvoices[sortedAllInvoices.length - 1]
+                    }`
+                  : "N/A";
+
+              return {
+                name: month,
+                revenue: parseFloat(revenueByMonth[month].revenue.toFixed(2)),
+                pending: parseFloat(revenueByMonth[month].pending.toFixed(2)),
+                tax: parseFloat(revenueByMonth[month].tax.toFixed(2)),
+                qty: revenueByMonth[month].qty,
+                taxable: parseFloat(revenueByMonth[month].taxable.toFixed(2)),
+                invoiceCount: sortedInvoices.length,
+                totalInvoices: sortedAllInvoices.length,
+                invoiceRange: range,
+              };
+            }
           );
+
+          setMonthlyRevenue(formattedMonthlyData);
 
           setTotalRevenue(parseFloat(totalRevenueSum.toFixed(2)));
           setTotalPending(parseFloat(totalPendingSum.toFixed(2)));
@@ -163,6 +201,9 @@ export default function ReportsPage() {
         "Tax (₹)": item.tax.toFixed(2),
         "Taxable Amount (₹)": item.taxable.toFixed(2),
         Qty: item.qty,
+        "Paid Invoice Count": item.invoiceCount,
+        "Total Invoice Count": item.totalInvoices,
+        "Invoice Range": item.invoiceRange,
       })),
       {},
       {
