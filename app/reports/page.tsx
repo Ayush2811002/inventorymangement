@@ -109,9 +109,10 @@ export default function ReportsPage() {
               };
             }
 
-            const grandTotal = invoice.taxes?.grandTotal || 0;
-            const taxTotal = invoice.taxes?.totalTax || 0;
-            const taxableAmount = grandTotal - taxTotal;
+            const grandTotal = Math.round(invoice.taxes?.grandTotal || 0);
+
+            const taxTotal = Math.round(invoice.taxes?.totalTax || 0);
+            const taxableAmount = grandTotal - taxTotal; // Already rounded
 
             let qtySum = 0;
             if (invoice.products && Array.isArray(invoice.products)) {
@@ -173,11 +174,11 @@ export default function ReportsPage() {
 
           setMonthlyRevenue(formattedMonthlyData);
 
-          setTotalRevenue(parseFloat(totalRevenueSum.toFixed(2)));
-          setTotalPending(parseFloat(totalPendingSum.toFixed(2)));
-          setTotalTax(parseFloat(totalTaxSum.toFixed(2)));
+          setTotalRevenue(Math.round(totalRevenueSum));
+          setTotalPending(Math.round(totalPendingSum));
+          setTotalTax(Math.round(totalTaxSum));
           setTotalQty(totalQtySum);
-          setTotalTaxable(parseFloat(totalTaxableSum.toFixed(2)));
+          setTotalTaxable(Math.round(totalTaxableSum));
 
           setInvoiceStatus([
             { status: "Paid", count: statusCounts.Paid },

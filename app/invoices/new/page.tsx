@@ -20,38 +20,38 @@ import {
 } from "@/components/ui/table";
 export default function NewInvoicePage() {
   // const [invoiceNumber, setInvoiceNumber] = useState(1); // Auto-incremented invoice number
-  const [invoiceNumber, setInvoiceNumber] = useState<string>(""); 
+  const [invoiceNumber, setInvoiceNumber] = useState<string>("");
 
   const [billTo, setBillTo] = useState("");
   const [billingAddress, setBillingAddress] = useState("");
-    const [Phoneno, setPhoneno] = useState("");
+  const [Phoneno, setPhoneno] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
-   const [SPhoneno, setSPhoneno] = useState("");
+  const [SPhoneno, setSPhoneno] = useState("");
   const [sameAsBilling, setSameAsBilling] = useState(false);
   // const [discount, setDiscount] = useState<number>(0);
 
   const [gstin, setGstin] = useState("");
   // const [invoiceDate] = useState(new Date().toISOString().split("T")[0]); // Auto-fetch date
   const [invoiceDate, setInvoiceDate] = useState(() => {
-  const today = new Date();
-  today.setMinutes(today.getMinutes() - today.getTimezoneOffset()); // Adjust for local timezone
-  const formattedDate = today.toISOString().split("T")[0];
-  console.log("📅 Adjusted Invoice Date:", formattedDate);
-  return formattedDate;
-});
-const [billingDate] = useState(() => {
-  const now = new Date();
-  const istOffset = 330; // IST is UTC+5:30
-  const localTime = new Date(now.getTime() + (istOffset + now.getTimezoneOffset()) * 60000);
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset()); // Adjust for local timezone
+    const formattedDate = today.toISOString().split("T")[0];
+    console.log("📅 Adjusted Invoice Date:", formattedDate);
+    return formattedDate;
+  });
+  const [billingDate] = useState(() => {
+    const now = new Date();
+    const istOffset = 330; // IST is UTC+5:30
+    const localTime = new Date(
+      now.getTime() + (istOffset + now.getTimezoneOffset()) * 60000
+    );
 
-  const year = localTime.getFullYear();
-  const month = String(localTime.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-  const day = String(localTime.getDate()).padStart(2, '0');
+    const year = localTime.getFullYear();
+    const month = String(localTime.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
+    const day = String(localTime.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-});
-
-
+    return `${year}-${month}-${day}`;
+  });
 
   const [paymentStatus, setPaymentStatus] = useState("Pending"); // Default to "due"
   const [paidOn, setPaidOn] = useState(""); // Empty initially
@@ -89,150 +89,158 @@ const [billingDate] = useState(() => {
   // // Fetch the last invoice number and auto-increment
 
   interface Invoice {
-  invoiceNumber: string;
-  // Add other fields if needed (e.g., billTo, invoiceDate, etc.)
-}
+    invoiceNumber: string;
+    // Add other fields if needed (e.g., billTo, invoiceDate, etc.)
+  }
 
-// useEffect(() => {
-//   const fetchLastInvoiceNumber = async () => {
-//     try {
-//       const invoicesRef = query(ref(db, "invoices"), orderByKey());
-//       const snapshot = await get(invoicesRef);
+  // useEffect(() => {
+  //   const fetchLastInvoiceNumber = async () => {
+  //     try {
+  //       const invoicesRef = query(ref(db, "invoices"), orderByKey());
+  //       const snapshot = await get(invoicesRef);
 
-//       let newInvoiceNumber = 1; // Default if no invoices exist
-//       if (snapshot.exists()) {
-//            const invoices = Object.values(snapshot.val()) as Invoice[]; // ✅ Typecasting Fix
-//         const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
+  //       let newInvoiceNumber = 1; // Default if no invoices exist
+  //       if (snapshot.exists()) {
+  //            const invoices = Object.values(snapshot.val()) as Invoice[]; // ✅ Typecasting Fix
+  //         const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
 
-//         if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
-//   const lastNumber = parseInt(lastInvoice.invoiceNumber.split("/").pop() || "0", 10);
-//   newInvoiceNumber = lastNumber + 1;
-// } else {
-//   console.warn("Invalid invoiceNumber format:", lastInvoice?.invoiceNumber);
-// }
-//       }
+  //         if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
+  //   const lastNumber = parseInt(lastInvoice.invoiceNumber.split("/").pop() || "0", 10);
+  //   newInvoiceNumber = lastNumber + 1;
+  // } else {
+  //   console.warn("Invalid invoiceNumber format:", lastInvoice?.invoiceNumber);
+  // }
+  //       }
 
-//       // Generate formatted invoice number
-//       const now = new Date();
-//       const year = now.getFullYear();
-//       const month = String(now.getMonth() + 1).padStart(2, "0"); // Ensure 2-digit month
-//       const formattedInvoiceNumber = `SSE/${year}/${month}-${String(newInvoiceNumber).padStart(4, "0")}`;
-// console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
-//       setInvoiceNumber(formattedInvoiceNumber);
-//     } catch (error) {
-//       console.error("Error fetching invoice number:", error);
-//     }
-//   };
+  //       // Generate formatted invoice number
+  //       const now = new Date();
+  //       const year = now.getFullYear();
+  //       const month = String(now.getMonth() + 1).padStart(2, "0"); // Ensure 2-digit month
+  //       const formattedInvoiceNumber = `SSE/${year}/${month}-${String(newInvoiceNumber).padStart(4, "0")}`;
+  // console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
+  //       setInvoiceNumber(formattedInvoiceNumber);
+  //     } catch (error) {
+  //       console.error("Error fetching invoice number:", error);
+  //     }
+  //   };
 
-//   fetchLastInvoiceNumber();
-// }, []);
-// useEffect(() => {
-//   const fetchLastInvoiceNumber = async () => {
-//     try {
-//       const invoicesRef = query(ref(db, "invoices"), orderByKey());
-//       const snapshot = await get(invoicesRef);
+  //   fetchLastInvoiceNumber();
+  // }, []);
+  // useEffect(() => {
+  //   const fetchLastInvoiceNumber = async () => {
+  //     try {
+  //       const invoicesRef = query(ref(db, "invoices"), orderByKey());
+  //       const snapshot = await get(invoicesRef);
 
-//       let newInvoiceNumber = 1; // Default if no invoices exist
+  //       let newInvoiceNumber = 1; // Default if no invoices exist
 
-//       // Get current year and month
-//       const now = new Date();
-//       const currentYear = now.getFullYear();
-//       const currentMonth = String(now.getMonth() + 1).padStart(2, "0"); // Ensure 2-digit month
+  //       // Get current year and month
+  //       const now = new Date();
+  //       const currentYear = now.getFullYear();
+  //       const currentMonth = String(now.getMonth() + 1).padStart(2, "0"); // Ensure 2-digit month
 
-//       if (snapshot.exists()) {
-//         const invoices = Object.values(snapshot.val()) as Invoice[];
-//         const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
+  //       if (snapshot.exists()) {
+  //         const invoices = Object.values(snapshot.val()) as Invoice[];
+  //         const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
 
-//         if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
-//           const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
-//           const lastYear = parseInt(lastInvoiceParts[1], 10); // Extract year
-//           const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
+  //         if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
+  //           const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
+  //           const lastYear = parseInt(lastInvoiceParts[1], 10); // Extract year
+  //           const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
 
-//           if (lastYear === currentYear && lastMonth === currentMonth) {
-//             // Same month → Increment the last invoice number
-//             const lastNumber = parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
-//             newInvoiceNumber = lastNumber + 1;
-//           } else {
-//             // New month → Restart series from 0001
-//             newInvoiceNumber = 1;
-//           }
-//         } else {
-//           console.warn("Invalid invoiceNumber format:", lastInvoice?.invoiceNumber);
-//         }
-//       }
+  //           if (lastYear === currentYear && lastMonth === currentMonth) {
+  //             // Same month → Increment the last invoice number
+  //             const lastNumber = parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
+  //             newInvoiceNumber = lastNumber + 1;
+  //           } else {
+  //             // New month → Restart series from 0001
+  //             newInvoiceNumber = 1;
+  //           }
+  //         } else {
+  //           console.warn("Invalid invoiceNumber format:", lastInvoice?.invoiceNumber);
+  //         }
+  //       }
 
-//       // Generate formatted invoice number
-//       const formattedInvoiceNumber = `SSE/${currentYear}/${currentMonth}-${String(newInvoiceNumber).padStart(4, "0")}`;
-//       console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
-//       setInvoiceNumber(formattedInvoiceNumber);
-//     } catch (error) {
-//       console.error("Error fetching invoice number:", error);
-//     }
-//   };
+  //       // Generate formatted invoice number
+  //       const formattedInvoiceNumber = `SSE/${currentYear}/${currentMonth}-${String(newInvoiceNumber).padStart(4, "0")}`;
+  //       console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
+  //       setInvoiceNumber(formattedInvoiceNumber);
+  //     } catch (error) {
+  //       console.error("Error fetching invoice number:", error);
+  //     }
+  //   };
 
-//   fetchLastInvoiceNumber();
-// }, []);
-useEffect(() => {
-  const fetchLastInvoiceNumber = async () => {
-    try {
-      const invoicesRef = query(ref(db, "invoices"), orderByKey());
-      const snapshot = await get(invoicesRef);
+  //   fetchLastInvoiceNumber();
+  // }, []);
+  useEffect(() => {
+    const fetchLastInvoiceNumber = async () => {
+      try {
+        const invoicesRef = query(ref(db, "invoices"), orderByKey());
+        const snapshot = await get(invoicesRef);
 
-      let newInvoiceNumber = 1; // Default if no invoices exist
+        let newInvoiceNumber = 1; // Default if no invoices exist
 
-      // Get current date and financial year
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth() + 1; // 1-based month (Jan = 1, ..., Dec = 12)
+        // Get current date and financial year
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1; // 1-based month (Jan = 1, ..., Dec = 12)
 
-      // Calculate financial year
-      const financialYearStart = currentMonth >= 4 ? currentYear : currentYear - 1;
-      const financialYearEnd = financialYearStart + 1;
-      const financialYear = `${financialYearStart}-${financialYearEnd.toString().slice(-2)}`; // Format: 2024-25
+        // Calculate financial year
+        const financialYearStart =
+          currentMonth >= 4 ? currentYear : currentYear - 1;
+        const financialYearEnd = financialYearStart + 1;
+        const financialYear = `${financialYearStart}-${financialYearEnd
+          .toString()
+          .slice(-2)}`; // Format: 2024-25
 
-      if (snapshot.exists()) {
-        const invoices = Object.values(snapshot.val()) as Invoice[];
-        const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
+        if (snapshot.exists()) {
+          const invoices = Object.values(snapshot.val()) as Invoice[];
+          const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
 
-        if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
-          const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
-          const lastFY = lastInvoiceParts[1]; // Extract financial year
-          const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
+          if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
+            const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
+            const lastFY = lastInvoiceParts[1]; // Extract financial year
+            const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
 
-          if (lastFY === financialYear && lastMonth === String(currentMonth).padStart(2, "0")) {
-            // Same financial year & month → Increment the last invoice number
-            const lastNumber = parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
-            newInvoiceNumber = lastNumber + 1;
+            if (
+              lastFY === financialYear &&
+              lastMonth === String(currentMonth).padStart(2, "0")
+            ) {
+              // Same financial year & month → Increment the last invoice number
+              const lastNumber =
+                parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
+              newInvoiceNumber = lastNumber + 1;
+            } else {
+              // New month → Restart series from 0001
+              newInvoiceNumber = 1;
+            }
           } else {
-            // New month → Restart series from 0001
-            newInvoiceNumber = 1;
+            console.warn(
+              "Invalid invoiceNumber format:",
+              lastInvoice?.invoiceNumber
+            );
           }
-        } else {
-          console.warn("Invalid invoiceNumber format:", lastInvoice?.invoiceNumber);
         }
+
+        // Generate formatted invoice number with financial year
+        const formattedInvoiceNumber = `SSE/${financialYear}/${String(
+          currentMonth
+        ).padStart(2, "0")}-${String(newInvoiceNumber).padStart(4, "0")}`;
+        console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
+        setInvoiceNumber(formattedInvoiceNumber);
+      } catch (error) {
+        console.error("Error fetching invoice number:", error);
       }
+    };
 
-      // Generate formatted invoice number with financial year
-      const formattedInvoiceNumber = `SSE/${financialYear}/${String(currentMonth).padStart(2, "0")}-${String(newInvoiceNumber).padStart(4, "0")}`;
-      console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
-      setInvoiceNumber(formattedInvoiceNumber);
-    } catch (error) {
-      console.error("Error fetching invoice number:", error);
-    }
-  };
-
-  fetchLastInvoiceNumber();
-}, []);
-
+    fetchLastInvoiceNumber();
+  }, []);
 
   // Copy Billing Address to Shipping Address
   const handleCheckboxChange = () => {
     setSameAsBilling(!sameAsBilling);
     setShippingAddress(!sameAsBilling ? billingAddress : "");
-        setSPhoneno(!sameAsBilling ? Phoneno : "");
-
-
- 
+    setSPhoneno(!sameAsBilling ? Phoneno : "");
   };
 
   const addProduct = () => {
@@ -278,7 +286,7 @@ useEffect(() => {
       SPhoneno,
       gstin,
       invoiceDate,
-        billingDate, // ✅ New Billing Date (stored separately)
+      billingDate, // ✅ New Billing Date (stored separately)
       products,
       createdAt: new Date().toISOString(),
       paymentStatus, // ✅ Add Payment Status
@@ -350,7 +358,7 @@ useEffect(() => {
                 className="bg-gray-700 text-white border-gray-600"
               />
             </div>
-                     <div className="space-y-2">
+            <div className="space-y-2">
               <Label className="text-gray-300">Phone no</Label>
               <Input
                 value={Phoneno}
@@ -379,7 +387,7 @@ useEffect(() => {
               />
             </div>
 
- <div className="space-y-2">
+            <div className="space-y-2">
               <Label className="text-gray-300">Phone no</Label>
               <Input
                 value={SPhoneno}
@@ -401,24 +409,22 @@ useEffect(() => {
 
             <div className="space-y-2">
               <Label className="text-gray-300">Invoice Date</Label>
-          <input
-  type="date"
-  value={invoiceDate}
-  onChange={(e) => setInvoiceDate(e.target.value)}
-  className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-/>
-     </div>
- <div className="space-y-2">
-   <label className="text-white">Billing Date</label>
-  <input
-    type="date"
-    value={billingDate}
-    readOnly
-    className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full opacity-70 cursor-not-allowed"
-  />
-</div>
-
-
+              <input
+                type="date"
+                value={invoiceDate}
+                onChange={(e) => setInvoiceDate(e.target.value)}
+                className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white">Billing Date</label>
+              <input
+                type="date"
+                value={billingDate}
+                readOnly
+                className="bg-gray-700 text-white border-gray-600 rounded px-3 py-2 w-full opacity-70 cursor-not-allowed"
+              />
+            </div>
 
             {/* Products Section */}
             <h2 className="text-xl font-semibold text-white mt-6">Products</h2>
@@ -604,13 +610,12 @@ useEffect(() => {
               </select>
             </div>
 
-            {/* Show "Paid On" only if payment is marked as Paid */}
             {paymentStatus === "paid" && (
               <div className="space-y-2 mt-4">
                 <Label className="text-gray-300">Paid On</Label>
                 <Input
                   type="date"
-                  value={paidOn}
+                  value={paidOn || new Date().toISOString().split("T")[0]}
                   onChange={(e) => setPaidOn(e.target.value)}
                   className="bg-gray-700 text-white border-gray-600"
                 />
