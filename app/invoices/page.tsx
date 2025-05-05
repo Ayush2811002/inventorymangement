@@ -21,7 +21,6 @@ const MySwal = withReactContent(Swal);
 import {
   PlusCircle,
   Eye,
-  Edit,
   Trash,
   Search,
   Calendar,
