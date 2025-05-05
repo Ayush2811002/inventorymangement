@@ -7,6 +7,7 @@ type SimulatedChangeEvent = {
     value: string;
   };
 };
+import { PencilIcon } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -14,6 +15,9 @@ import { db } from "@/components/utils/firebaseConfig";
 import { ref, get, remove, update } from "firebase/database";
 import Swal from "sweetalert2";
 import { handleViewInvoice } from "@/components/utils/invoiceUtils";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 import {
   PlusCircle,
   Eye,
@@ -471,6 +475,90 @@ export default function InvoicesPage() {
     } else {
       setSelectedInvoices([...selectedInvoices, id]);
     }
+  };
+
+  const handleEditOptions = (invoice: any) => {
+    Swal.fire({
+      title: "Edit Options",
+      text: "Choose what you want to do",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Edit Whole Invoice",
+      cancelButtonText: "Update Payment Status",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showEditInvoiceForm(invoice);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        handleEdit(invoice); // existing handler
+      }
+    });
+  };
+  const showEditInvoiceForm = (invoice: any) => {
+    MySwal.fire({
+      title: "Edit Invoice",
+      html: `
+      <input id="swal-invoiceNumber" class="swal2-input" placeholder="Invoice Number" value="${
+        invoice.invoiceNumber || ""
+      }" />
+      <input id="swal-billTo" class="swal2-input" placeholder="Bill To" value="${
+        invoice.billTo || ""
+      }" />
+      <input id="swal-billingAddress" class="swal2-input" placeholder="Billing Address" value="${
+        invoice.billingAddress || ""
+      }" />
+      <input id="swal-phoneno" class="swal2-input" placeholder="Phone No" value="${
+        invoice.Phoneno || ""
+      }" />
+      <input id="swal-gstin" class="swal2-input" placeholder="GSTIN" value="${
+        invoice.gstin || ""
+      }" />
+      <input id="swal-invoiceDate" type="date" class="swal2-input" placeholder="Invoice Date" value="${
+        invoice.invoiceDate || ""
+      }" />
+      <input id="swal-paidOn" type="date" class="swal2-input" placeholder="Paid On" value="${
+        invoice.paidOn || ""
+      }" />
+      <input id="swal-paymentStatus" class="swal2-input" placeholder="Payment Status" value="${
+        invoice.paymentStatus || ""
+      }" />
+    `,
+      focusConfirm: false,
+      preConfirm: () => {
+        return {
+          ...invoice,
+          invoiceNumber: (
+            document.getElementById("swal-invoiceNumber") as HTMLInputElement
+          )?.value,
+          billTo: (document.getElementById("swal-billTo") as HTMLInputElement)
+            ?.value,
+          billingAddress: (
+            document.getElementById("swal-billingAddress") as HTMLInputElement
+          )?.value,
+          Phoneno: (document.getElementById("swal-phoneno") as HTMLInputElement)
+            ?.value,
+          gstin: (document.getElementById("swal-gstin") as HTMLInputElement)
+            ?.value,
+          invoiceDate: (
+            document.getElementById("swal-invoiceDate") as HTMLInputElement
+          )?.value,
+          paidOn: (document.getElementById("swal-paidOn") as HTMLInputElement)
+            ?.value,
+          paymentStatus: (
+            document.getElementById("swal-paymentStatus") as HTMLInputElement
+          )?.value,
+        };
+      },
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateInvoice(result.value);
+      }
+    });
+  };
+
+  const updateInvoice = (updatedInvoice: any) => {
+    // send update to API or update state
+    console.log("Updated Invoice:", updatedInvoice);
   };
 
   return (
@@ -993,9 +1081,11 @@ export default function InvoicesPage() {
                                           size="icon"
                                           variant="ghost"
                                           className="h-8 w-8 text-yellow-500 hover:text-yellow-400 hover:bg-gray-700"
-                                          onClick={() => handleEdit(invoice)}
+                                          onClick={() =>
+                                            handleEditOptions(invoice)
+                                          }
                                         >
-                                          <Edit className="h-4 w-4" />
+                                          <PencilIcon className="h-4 w-4" />
                                         </Button>
                                       </TooltipTrigger>
                                       <TooltipContent>
