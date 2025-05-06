@@ -12,10 +12,11 @@ import { PencilIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { db } from "@/components/utils/firebaseConfig";
-import { ref, get, remove, update } from "firebase/database";
+import { getDatabase, ref, get, remove, update } from "firebase/database";
 import Swal from "sweetalert2";
 import { handleViewInvoice } from "@/components/utils/invoiceUtils";
 import withReactContent from "sweetalert2-react-content";
+import EditInvoiceModal from "@/app/invoices/EditInvoiceModal";
 
 const MySwal = withReactContent(Swal);
 import {
@@ -107,6 +108,7 @@ export default function InvoicesPage() {
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [isEditOpen, setEditOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -492,72 +494,97 @@ export default function InvoicesPage() {
       }
     });
   };
+  // const showEditInvoiceForm = (invoice: any) => {
+  //   MySwal.fire({
+  //     title: "Edit Invoice",
+  //     html: `
+  //     <input id="swal-invoiceNumber" class="swal2-input" placeholder="Invoice Number" value="${
+  //       invoice.invoiceNumber || ""
+  //     }" />
+  //     <input id="swal-billTo" class="swal2-input" placeholder="Bill To" value="${
+  //       invoice.billTo || ""
+  //     }" />
+  //     <input id="swal-billingAddress" class="swal2-input" placeholder="Billing Address" value="${
+  //       invoice.billingAddress || ""
+  //     }" />
+  //     <input id="swal-phoneno" class="swal2-input" placeholder="Phone No" value="${
+  //       invoice.Phoneno || ""
+  //     }" />
+  //     <input id="swal-gstin" class="swal2-input" placeholder="GSTIN" value="${
+  //       invoice.gstin || ""
+  //     }" />
+  //     <input id="swal-invoiceDate" type="date" class="swal2-input" placeholder="Invoice Date" value="${
+  //       invoice.invoiceDate || ""
+  //     }" />
+  //     <input id="swal-paidOn" type="date" class="swal2-input" placeholder="Paid On" value="${
+  //       invoice.paidOn || ""
+  //     }" />
+  //     <input id="swal-paymentStatus" class="swal2-input" placeholder="Payment Status" value="${
+  //       invoice.paymentStatus || ""
+  //     }" />
+  //   `,
+  //     focusConfirm: false,
+  //     preConfirm: () => {
+  //       return {
+  //         ...invoice,
+  //         invoiceNumber: (
+  //           document.getElementById("swal-invoiceNumber") as HTMLInputElement
+  //         )?.value,
+  //         billTo: (document.getElementById("swal-billTo") as HTMLInputElement)
+  //           ?.value,
+  //         billingAddress: (
+  //           document.getElementById("swal-billingAddress") as HTMLInputElement
+  //         )?.value,
+  //         Phoneno: (document.getElementById("swal-phoneno") as HTMLInputElement)
+  //           ?.value,
+  //         gstin: (document.getElementById("swal-gstin") as HTMLInputElement)
+  //           ?.value,
+  //         invoiceDate: (
+  //           document.getElementById("swal-invoiceDate") as HTMLInputElement
+  //         )?.value,
+  //         paidOn: (document.getElementById("swal-paidOn") as HTMLInputElement)
+  //           ?.value,
+  //         paymentStatus: (
+  //           document.getElementById("swal-paymentStatus") as HTMLInputElement
+  //         )?.value,
+  //       };
+  //     },
+  //     showCancelButton: true,
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       updateInvoice(result.value);
+  //     }
+  //   });
+  // };
   const showEditInvoiceForm = (invoice: any) => {
-    MySwal.fire({
-      title: "Edit Invoice",
-      html: `
-      <input id="swal-invoiceNumber" class="swal2-input" placeholder="Invoice Number" value="${
-        invoice.invoiceNumber || ""
-      }" />
-      <input id="swal-billTo" class="swal2-input" placeholder="Bill To" value="${
-        invoice.billTo || ""
-      }" />
-      <input id="swal-billingAddress" class="swal2-input" placeholder="Billing Address" value="${
-        invoice.billingAddress || ""
-      }" />
-      <input id="swal-phoneno" class="swal2-input" placeholder="Phone No" value="${
-        invoice.Phoneno || ""
-      }" />
-      <input id="swal-gstin" class="swal2-input" placeholder="GSTIN" value="${
-        invoice.gstin || ""
-      }" />
-      <input id="swal-invoiceDate" type="date" class="swal2-input" placeholder="Invoice Date" value="${
-        invoice.invoiceDate || ""
-      }" />
-      <input id="swal-paidOn" type="date" class="swal2-input" placeholder="Paid On" value="${
-        invoice.paidOn || ""
-      }" />
-      <input id="swal-paymentStatus" class="swal2-input" placeholder="Payment Status" value="${
-        invoice.paymentStatus || ""
-      }" />
-    `,
-      focusConfirm: false,
-      preConfirm: () => {
-        return {
-          ...invoice,
-          invoiceNumber: (
-            document.getElementById("swal-invoiceNumber") as HTMLInputElement
-          )?.value,
-          billTo: (document.getElementById("swal-billTo") as HTMLInputElement)
-            ?.value,
-          billingAddress: (
-            document.getElementById("swal-billingAddress") as HTMLInputElement
-          )?.value,
-          Phoneno: (document.getElementById("swal-phoneno") as HTMLInputElement)
-            ?.value,
-          gstin: (document.getElementById("swal-gstin") as HTMLInputElement)
-            ?.value,
-          invoiceDate: (
-            document.getElementById("swal-invoiceDate") as HTMLInputElement
-          )?.value,
-          paidOn: (document.getElementById("swal-paidOn") as HTMLInputElement)
-            ?.value,
-          paymentStatus: (
-            document.getElementById("swal-paymentStatus") as HTMLInputElement
-          )?.value,
-        };
-      },
-      showCancelButton: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        updateInvoice(result.value);
-      }
-    });
+    setSelectedInvoice(invoice);
+    setEditOpen(true);
   };
+  const updateInvoice = async (updatedInvoice: any) => {
+    try {
+      const db = getDatabase();
+      const invoiceRef = ref(db, `invoices/${updatedInvoice.id}`); // Adjust path if needed
 
-  const updateInvoice = (updatedInvoice: any) => {
-    // send update to API or update state
-    console.log("Updated Invoice:", updatedInvoice);
+      await update(invoiceRef, updatedInvoice);
+      // ✅ Update local state
+      setInvoices((prev) =>
+        prev.map((inv) =>
+          inv.id === updatedInvoice.id ? { ...inv, ...updatedInvoice } : inv
+        )
+      );
+      Swal.fire({
+        icon: "success",
+        title: "Saved!",
+        text: "Invoice updated successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to update invoice:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to save invoice.",
+      });
+    }
   };
 
   return (
@@ -1259,6 +1286,15 @@ export default function InvoicesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <EditInvoiceModal
+        open={isEditOpen}
+        onClose={() => setEditOpen(false)}
+        invoice={selectedInvoice}
+        onSave={(updatedInvoice: any) => {
+          updateInvoice(updatedInvoice); // ✅ This saves to DB + local state
+          setEditOpen(false);
+        }}
+      />
     </div>
   );
 }
