@@ -57,6 +57,31 @@ export default function EditInvoiceModal({
     }
   }, [invoice]);
 
+  // const calculateTotals = (products: any[] = [], taxes: any = {}) => {
+  //   const productTotal = products.reduce((sum: number, p: any) => {
+  //     const qty = Number.parseFloat(p.qty || 0);
+  //     const price = Number.parseFloat(p.price || 0);
+  //     return sum + qty * price;
+  //   }, 0);
+
+  //   const sgst = Number.parseFloat(taxes.sgst || 0);
+  //   const cgst = Number.parseFloat(taxes.cgst || 0);
+  //   const igst = Number.parseFloat(taxes.igst || 0);
+  //   const totalTax = sgst + cgst + igst;
+  //   const grandTotal = productTotal + totalTax;
+
+  //   return {
+  //     productTotal,
+  //     taxes: {
+  //       ...taxes,
+  //       sgst,
+  //       cgst,
+  //       igst,
+  //       totalTax,
+  //       grandTotal,
+  //     },
+  //   };
+  // };
   const calculateTotals = (products: any[] = [], taxes: any = {}) => {
     const productTotal = products.reduce((sum: number, p: any) => {
       const qty = Number.parseFloat(p.qty || 0);
@@ -64,19 +89,24 @@ export default function EditInvoiceModal({
       return sum + qty * price;
     }, 0);
 
-    const sgst = Number.parseFloat(taxes.sgst || 0);
-    const cgst = Number.parseFloat(taxes.cgst || 0);
-    const igst = Number.parseFloat(taxes.igst || 0);
-    const totalTax = sgst + cgst + igst;
+    const sgstRate = Number.parseFloat(taxes.sgst || 0);
+    const cgstRate = Number.parseFloat(taxes.cgst || 0);
+    const igstRate = Number.parseFloat(taxes.igst || 0);
+
+    const sgstAmount = (productTotal * sgstRate) / 100;
+    const cgstAmount = (productTotal * cgstRate) / 100;
+    const igstAmount = (productTotal * igstRate) / 100;
+
+    const totalTax = sgstAmount + cgstAmount + igstAmount;
     const grandTotal = productTotal + totalTax;
 
     return {
       productTotal,
       taxes: {
         ...taxes,
-        sgst,
-        cgst,
-        igst,
+        sgst: sgstRate,
+        cgst: cgstRate,
+        igst: igstRate,
         totalTax,
         grandTotal,
       },

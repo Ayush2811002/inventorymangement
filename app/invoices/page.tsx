@@ -169,6 +169,21 @@ export default function InvoicesPage() {
       setLoading(false);
     }
   };
+  const showGrandTotalSum = () => {
+    const count = filteredInvoices.length;
+    const sum = filteredInvoices.reduce((total, invoice) => {
+      return total + Math.round(invoice.grandTotal || 0); // Round per invoice
+    }, 0);
+
+    Swal.fire({
+      title: "Grand Total Summary",
+      html: `
+      <p><strong>Total Invoices:</strong> ${count}</p>
+      <p><strong>Total Grand Amount:</strong> ₹${sum.toLocaleString()}</p>
+    `,
+      icon: "info",
+    });
+  };
 
   const applyFilters = () => {
     let result = [...invoices];
@@ -976,18 +991,20 @@ export default function InvoicesPage() {
                                 )}
                               </div>
                             </TableHead>
-                            <TableHead
-                              className="text-gray-400 cursor-pointer"
-                              onClick={() => handleSort("grandTotal")}
-                            >
-                              <div className="flex items-center">
-                                Grand Total
-                                {sortConfig &&
-                                  sortConfig.key === "grandTotal" && (
-                                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                                  )}
+                            <TableHead className="text-gray-400">
+                              <div
+                                className="flex items-center cursor-pointer"
+                                onClick={() => {
+                                  handleSort("grandTotal");
+                                  showGrandTotalSum();
+                                }}
+                                title="Click to sort and view total"
+                              >
+                                Grand Total (₹)
+                                <ArrowUpDown className="ml-2 h-4 w-4" />
                               </div>
                             </TableHead>
+
                             <TableHead
                               className="text-gray-400 cursor-pointer"
                               onClick={() => handleSort("paymentStatus")}
