@@ -26,14 +26,52 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+interface Product {
+  description: string;
+  hsnCode: string;
+  price: number;
+  qty: number;
+}
 
+interface Taxes {
+  sgst: number;
+  cgst: number;
+  igst: number;
+  totalTax?: number;
+  grandTotal?: number;
+}
+
+interface Invoice {
+  invoiceNumber?: string;
+  billTo?: string;
+  billingAddress?: string;
+  Phoneno?: string;
+  gstin?: string;
+  invoiceDate?: string;
+  billingDate?: string;
+  paidOn?: string;
+  paymentStatus?: string;
+  products: Product[];
+  taxes: Taxes;
+  productTotal?: number;
+}
+
+interface EditInvoiceModalProps {
+  open: boolean;
+  onClose: () => void;
+  invoice: Invoice;
+  onSave: (invoice: Invoice) => void;
+}
+
+// 2. Use them in the component
 export default function EditInvoiceModal({
   open,
   onClose,
   invoice,
   onSave,
-}: any) {
-  const [formData, setFormData] = useState<any>({});
+}: EditInvoiceModalProps) {
+  const [formData, setFormData] = useState<Invoice>({} as Invoice);
+
   const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
@@ -82,16 +120,19 @@ export default function EditInvoiceModal({
   //     },
   //   };
   // };
-  const calculateTotals = (products: any[] = [], taxes: any = {}) => {
-    const productTotal = products.reduce((sum: number, p: any) => {
-      const qty = Number.parseFloat(p.qty || 0);
-      const price = Number.parseFloat(p.price || 0);
+  const calculateTotals = (
+    products: Product[] = [],
+    taxes: Taxes = { sgst: 0, cgst: 0, igst: 0 }
+  ) => {
+    const productTotal = products.reduce((sum: number, p: Product) => {
+      const qty = p.qty || 0;
+      const price = p.price || 0;
       return sum + qty * price;
     }, 0);
 
-    const sgstRate = Number.parseFloat(taxes.sgst || 0);
-    const cgstRate = Number.parseFloat(taxes.cgst || 0);
-    const igstRate = Number.parseFloat(taxes.igst || 0);
+    const sgstRate = taxes.sgst || 0;
+    const cgstRate = taxes.cgst || 0;
+    const igstRate = taxes.igst || 0;
 
     const sgstAmount = (productTotal * sgstRate) / 100;
     const cgstAmount = (productTotal * cgstRate) / 100;
@@ -113,12 +154,13 @@ export default function EditInvoiceModal({
     };
   };
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev: any) => {
+  const handleChange = (field: keyof Invoice, value: unknown) => {
+    setFormData((prev: Invoice) => {
       const updated = { ...prev, [field]: value };
 
-      const products = field === "products" ? value : prev.products;
-      const taxes = field === "taxes" ? value : prev.taxes;
+      const products =
+        field === "products" ? (value as Product[]) : prev.products;
+      const taxes = field === "taxes" ? (value as Taxes) : prev.taxes;
 
       const { productTotal, taxes: updatedTaxes } = calculateTotals(
         products,
@@ -132,10 +174,18 @@ export default function EditInvoiceModal({
       };
     });
   };
-
-  const handleProductChange = (index: number, key: string, value: any) => {
+  const handleProductChange = (
+    index: number,
+    key: keyof Product,
+    value: string | number
+  ) => {
     const updatedProducts = [...formData.products];
-    updatedProducts[index][key] = value;
+    if (key === "description" || key === "hsnCode") {
+      updatedProducts[index][key] = value as string;
+    } else if (key === "price" || key === "qty") {
+      updatedProducts[index][key] = value as number;
+    }
+
     handleChange("products", updatedProducts);
   };
 
@@ -157,7 +207,7 @@ export default function EditInvoiceModal({
     try {
       onSave({ ...formData });
       onClose();
-    } catch (err) {
+    } catch {
       alert("Error saving invoice!");
     }
   };
@@ -373,7 +423,7 @@ export default function EditInvoiceModal({
               </div>
 
               <AnimatePresence>
-                {formData.products?.map((product: any, index: number) => (
+                {formData.products?.map((product: Product, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -483,7 +533,8 @@ export default function EditInvoiceModal({
 
               {(!formData.products || formData.products.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground">
-                  No products added yet. Click "Add Product" to get started.
+                  No products added yet. Click &quot;Add Product&quot; to get
+                  started.
                 </div>
               )}
 
