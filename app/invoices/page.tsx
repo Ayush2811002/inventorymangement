@@ -15,7 +15,6 @@ import { db } from "@/components/utils/firebaseConfig";
 import { getDatabase, ref, get, remove, update } from "firebase/database";
 import Swal from "sweetalert2";
 import { handleViewInvoice } from "@/components/utils/invoiceUtils";
-import withReactContent from "sweetalert2-react-content";
 import EditInvoiceModal from "@/app/invoices/EditInvoiceModal";
 
 import {
@@ -492,7 +491,7 @@ export default function InvoicesPage() {
     }
   };
 
-  const handleEditOptions = (invoice: any) => {
+  const handleEditOptions = (invoice: Invoice) => {
     Swal.fire({
       title: "Edit Options",
       text: "Choose what you want to do",
@@ -570,11 +569,11 @@ export default function InvoicesPage() {
   //     }
   //   });
   // };
-  const showEditInvoiceForm = (invoice: any) => {
+  const showEditInvoiceForm = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
     setEditOpen(true);
   };
-  const updateInvoice = async (updatedInvoice: any) => {
+  const updateInvoice = async (updatedInvoice: Invoice) => {
     try {
       const db = getDatabase();
       const invoiceRef = ref(db, `invoices/${updatedInvoice.id}`); // Adjust path if needed
