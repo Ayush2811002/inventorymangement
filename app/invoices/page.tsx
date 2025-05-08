@@ -18,7 +18,6 @@ import { handleViewInvoice } from "@/components/utils/invoiceUtils";
 import withReactContent from "sweetalert2-react-content";
 import EditInvoiceModal from "@/app/invoices/EditInvoiceModal";
 
-const MySwal = withReactContent(Swal);
 import {
   PlusCircle,
   Eye,
