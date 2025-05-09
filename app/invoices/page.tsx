@@ -1313,7 +1313,7 @@ export default function InvoicesPage() {
         invoice={
           {
             ...selectedInvoice,
-            taxes: (selectedInvoice as any)?.taxes ?? {
+            taxes: (selectedInvoice as ExtendedInvoice)?.taxes ?? {
               sgst: 0,
               cgst: 0,
               igst: 0,
@@ -1325,7 +1325,7 @@ export default function InvoicesPage() {
                 (total, p) => total + p.qty * p.price,
                 0
               ) ?? 0,
-            Phoneno: (selectedInvoice as any)?.Phoneno ?? "",
+            Phoneno: (selectedInvoice as ExtendedInvoice)?.Phoneno ?? "",
           } as ExtendedInvoice
         }
         onSave={(updatedInvoice) => {
