@@ -26,6 +26,21 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Invoice as BaseInvoice } from "@/app/invoices/types/invoice";
+interface Taxes {
+  sgst: number;
+  cgst: number;
+  igst: number;
+  totalTax?: number;
+  grandTotal?: number;
+}
+
+interface ExtendedInvoice extends BaseInvoice {
+  Phoneno?: string;
+  productTotal?: number;
+  taxes: Taxes;
+}
+
 interface Product {
   description: string;
   hsnCode: string;
@@ -41,26 +56,32 @@ interface Taxes {
   grandTotal?: number;
 }
 
-interface Invoice {
-  invoiceNumber?: string;
-  billTo?: string;
-  billingAddress?: string;
-  Phoneno?: string;
-  gstin?: string;
-  invoiceDate?: string;
-  billingDate?: string;
-  paidOn?: string;
-  paymentStatus?: string;
-  products: Product[];
-  taxes: Taxes;
-  productTotal?: number;
-}
+// interface Invoice {
+//   invoiceNumber?: string;
+//   billTo?: string;
+//   billingAddress?: string;
+//   Phoneno?: string;
+//   gstin?: string;
+//   invoiceDate?: string;
+//   billingDate?: string;
+//   paidOn?: string;
+//   paymentStatus?: string;
+//   products: Product[];
+//   taxes: Taxes;
+//   productTotal?: number;
+// }
 
+// interface EditInvoiceModalProps {
+//   open: boolean;
+//   onClose: () => void;
+//   invoice: Invoice;
+//   onSave: (invoice: Invoice) => void;
+// }
 interface EditInvoiceModalProps {
   open: boolean;
   onClose: () => void;
-  invoice: Invoice;
-  onSave: (invoice: Invoice) => void;
+  invoice: ExtendedInvoice;
+  onSave: (invoice: ExtendedInvoice) => void;
 }
 
 // 2. Use them in the component
@@ -70,7 +91,10 @@ export default function EditInvoiceModal({
   invoice,
   onSave,
 }: EditInvoiceModalProps) {
-  const [formData, setFormData] = useState<Invoice>({} as Invoice);
+  // const [formData, setFormData] = useState<Invoice>({} as Invoice);
+  const [formData, setFormData] = useState<ExtendedInvoice>(
+    {} as ExtendedInvoice
+  );
 
   const [activeTab, setActiveTab] = useState("details");
 
@@ -154,8 +178,8 @@ export default function EditInvoiceModal({
     };
   };
 
-  const handleChange = (field: keyof Invoice, value: unknown) => {
-    setFormData((prev: Invoice) => {
+  const handleChange = (field: keyof ExtendedInvoice, value: unknown) => {
+    setFormData((prev: ExtendedInvoice) => {
       const updated = { ...prev, [field]: value };
 
       const products =
@@ -179,7 +203,8 @@ export default function EditInvoiceModal({
     key: keyof Product,
     value: string | number
   ) => {
-    const updatedProducts = [...formData.products];
+    const updatedProducts = [...(formData.products ?? [])];
+
     if (key === "description" || key === "hsnCode") {
       updatedProducts[index][key] = value as string;
     } else if (key === "price" || key === "qty") {
@@ -198,7 +223,8 @@ export default function EditInvoiceModal({
   };
 
   const handleRemoveProduct = (index: number) => {
-    const updatedProducts = [...formData.products];
+    const updatedProducts = [...(formData.products ?? [])];
+
     updatedProducts.splice(index, 1);
     handleChange("products", updatedProducts);
   };
@@ -423,112 +449,114 @@ export default function EditInvoiceModal({
               </div>
 
               <AnimatePresence>
-                {formData.products?.map((product: Product, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Card className="relative overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-                      <CardContent className="p-6">
-                        <Badge className="absolute top-4 right-4 bg-slate-800">
-                          Item {index + 1}
-                        </Badge>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <Label htmlFor={`product-desc-${index}`}>
-                              Description
-                            </Label>
-                            <Input
-                              id={`product-desc-${index}`}
-                              value={product.description || ""}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  index,
-                                  "description",
-                                  e.target.value
-                                )
-                              }
-                              className="transition-all focus:ring-2 focus:ring-slate-500"
-                            />
+                {(formData.products ?? []).map(
+                  (product: Product, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card className="relative overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+                        <CardContent className="p-6">
+                          <Badge className="absolute top-4 right-4 bg-slate-800">
+                            Item {index + 1}
+                          </Badge>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <Label htmlFor={`product-desc-${index}`}>
+                                Description
+                              </Label>
+                              <Input
+                                id={`product-desc-${index}`}
+                                value={product.description || ""}
+                                onChange={(e) =>
+                                  handleProductChange(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
+                                className="transition-all focus:ring-2 focus:ring-slate-500"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`product-hsn-${index}`}>
+                                HSN Code
+                              </Label>
+                              <Input
+                                id={`product-hsn-${index}`}
+                                value={product.hsnCode || ""}
+                                onChange={(e) =>
+                                  handleProductChange(
+                                    index,
+                                    "hsnCode",
+                                    e.target.value
+                                  )
+                                }
+                                className="transition-all focus:ring-2 focus:ring-slate-500"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`product-price-${index}`}>
+                                Price
+                              </Label>
+                              <Input
+                                id={`product-price-${index}`}
+                                type="number"
+                                value={product.price || 0}
+                                onChange={(e) =>
+                                  handleProductChange(
+                                    index,
+                                    "price",
+                                    Number.parseFloat(e.target.value)
+                                  )
+                                }
+                                className="transition-all focus:ring-2 focus:ring-slate-500"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`product-qty-${index}`}>
+                                Quantity
+                              </Label>
+                              <Input
+                                id={`product-qty-${index}`}
+                                type="number"
+                                value={product.qty || 0}
+                                onChange={(e) =>
+                                  handleProductChange(
+                                    index,
+                                    "qty",
+                                    Number.parseInt(e.target.value)
+                                  )
+                                }
+                                className="transition-all focus:ring-2 focus:ring-slate-500"
+                              />
+                            </div>
                           </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`product-hsn-${index}`}>
-                              HSN Code
-                            </Label>
-                            <Input
-                              id={`product-hsn-${index}`}
-                              value={product.hsnCode || ""}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  index,
-                                  "hsnCode",
-                                  e.target.value
-                                )
-                              }
-                              className="transition-all focus:ring-2 focus:ring-slate-500"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`product-price-${index}`}>
-                              Price
-                            </Label>
-                            <Input
-                              id={`product-price-${index}`}
-                              type="number"
-                              value={product.price || 0}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  index,
-                                  "price",
-                                  Number.parseFloat(e.target.value)
-                                )
-                              }
-                              className="transition-all focus:ring-2 focus:ring-slate-500"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`product-qty-${index}`}>
-                              Quantity
-                            </Label>
-                            <Input
-                              id={`product-qty-${index}`}
-                              type="number"
-                              value={product.qty || 0}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  index,
-                                  "qty",
-                                  Number.parseInt(e.target.value)
-                                )
-                              }
-                              className="transition-all focus:ring-2 focus:ring-slate-500"
-                            />
-                          </div>
-                        </div>
 
-                        <div className="flex justify-between items-center mt-4">
-                          <div className="text-sm font-medium">
-                            Subtotal:{" "}
-                            {formatCurrency(
-                              (product.price || 0) * (product.qty || 0)
-                            )}
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="text-sm font-medium">
+                              Subtotal:{" "}
+                              {formatCurrency(
+                                (product.price || 0) * (product.qty || 0)
+                              )}
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRemoveProduct(index)}
+                              className="h-8 px-3"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" /> Remove
+                            </Button>
                           </div>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleRemoveProduct(index)}
-                            className="h-8 px-3"
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Remove
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                )}
               </AnimatePresence>
 
               {(!formData.products || formData.products.length === 0) && (

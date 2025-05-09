@@ -16,7 +16,13 @@ import { getDatabase, ref, get, remove, update } from "firebase/database";
 import Swal from "sweetalert2";
 import { handleViewInvoice } from "@/components/utils/invoiceUtils";
 import EditInvoiceModal from "@/app/invoices/EditInvoiceModal";
+import { Invoice, Product, Taxes } from "@/app/invoices/types/invoice";
 
+interface ExtendedInvoice extends Invoice {
+  Phoneno?: string;
+  productTotal?: number;
+  taxes: Taxes;
+}
 import {
   PlusCircle,
   Eye,
@@ -81,25 +87,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type Invoice = {
-  id: string;
-  billTo: string;
-  billingAddress: string;
-  gstin: string;
-  invoiceDate: string;
-  billingDate: string;
-  invoiceNumber: number;
-  paidOn?: string;
-  paymentStatus: string;
-  products?: {
-    qty: number;
-    hsnCode: string;
-    price: number;
-    description: string;
-  }[];
-  shippingAddress: string;
-  grandTotal?: number;
-};
+// type Invoice = {
+//   id: string;
+//   billTo: string;
+//   billingAddress: string;
+//   gstin: string;
+//   invoiceDate: string;
+//   billingDate: string;
+//   invoiceNumber: number;
+//   paidOn?: string;
+//   paymentStatus: string;
+//   products?: {
+//     qty: number;
+//     hsnCode: string;
+//     price: number;
+//     description: string;
+//   }[];
+//   shippingAddress: string;
+//   grandTotal?: number;
+// };
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -1304,9 +1310,26 @@ export default function InvoicesPage() {
       <EditInvoiceModal
         open={isEditOpen}
         onClose={() => setEditOpen(false)}
-        invoice={selectedInvoice}
-        onSave={(updatedInvoice: any) => {
-          updateInvoice(updatedInvoice); // ✅ This saves to DB + local state
+        invoice={
+          {
+            ...selectedInvoice,
+            taxes: (selectedInvoice as any)?.taxes ?? {
+              sgst: 0,
+              cgst: 0,
+              igst: 0,
+              totalTax: 0,
+              grandTotal: selectedInvoice?.grandTotal ?? 0,
+            },
+            productTotal:
+              selectedInvoice?.products?.reduce(
+                (total, p) => total + p.qty * p.price,
+                0
+              ) ?? 0,
+            Phoneno: (selectedInvoice as any)?.Phoneno ?? "",
+          } as ExtendedInvoice
+        }
+        onSave={(updatedInvoice) => {
+          updateInvoice(updatedInvoice);
           setEditOpen(false);
         }}
       />
