@@ -111,7 +111,10 @@ export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  // const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [selectedInvoice, setSelectedInvoice] =
+    useState<ExtendedInvoice | null>(null);
+
   const [isEditOpen, setEditOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -391,9 +394,24 @@ export default function InvoicesPage() {
   };
 
   const handleEdit = (invoice: Invoice) => {
-    setSelectedInvoice(invoice);
+    const extendedInvoice: ExtendedInvoice = {
+      ...invoice,
+      taxes: invoice.taxes ?? {
+        sgst: 0,
+        cgst: 0,
+        igst: 0,
+        totalTax: 0,
+        grandTotal: invoice.grandTotal ?? 0,
+      },
+      productTotal:
+        invoice.products?.reduce((total, p) => total + p.qty * p.price, 0) ?? 0,
+      Phoneno: (invoice as any).Phoneno ?? "",
+    };
+
+    setSelectedInvoice(extendedInvoice);
     setShowModal(true);
   };
+
   const handleChange = (e: SimulatedChangeEvent) => {
     if (!selectedInvoice) return;
 
@@ -576,9 +594,25 @@ export default function InvoicesPage() {
   //   });
   // };
   const showEditInvoiceForm = (invoice: Invoice) => {
-    setSelectedInvoice(invoice);
+    const extendedInvoice: ExtendedInvoice = {
+      ...invoice,
+      taxes: (invoice as any)?.taxes ?? {
+        sgst: 0,
+        cgst: 0,
+        igst: 0,
+        totalTax: 0,
+        grandTotal: invoice?.grandTotal ?? 0,
+      },
+      productTotal:
+        invoice?.products?.reduce((total, p) => total + p.qty * p.price, 0) ??
+        0,
+      Phoneno: (invoice as any)?.Phoneno ?? "",
+    };
+
+    setSelectedInvoice(extendedInvoice);
     setEditOpen(true);
   };
+
   const updateInvoice = async (updatedInvoice: Invoice) => {
     try {
       const db = getDatabase();
