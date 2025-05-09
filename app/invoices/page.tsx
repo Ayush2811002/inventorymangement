@@ -16,7 +16,7 @@ import { getDatabase, ref, get, remove, update } from "firebase/database";
 import Swal from "sweetalert2";
 import { handleViewInvoice } from "@/components/utils/invoiceUtils";
 import EditInvoiceModal from "@/app/invoices/EditInvoiceModal";
-import { Invoice, Product, Taxes } from "@/app/invoices/types/invoice";
+import { Invoice, Taxes } from "@/app/invoices/types/invoice";
 
 interface ExtendedInvoice extends Invoice {
   Phoneno?: string;
