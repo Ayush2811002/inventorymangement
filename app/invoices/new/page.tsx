@@ -172,6 +172,70 @@ export default function NewInvoicePage() {
 
   //   fetchLastInvoiceNumber();
   // }, []);
+  // useEffect(() => {
+  //   const fetchLastInvoiceNumber = async () => {
+  //     try {
+  //       const invoicesRef = query(ref(db, "invoices"), orderByKey());
+  //       const snapshot = await get(invoicesRef);
+
+  //       let newInvoiceNumber = 1; // Default if no invoices exist
+
+  //       // Get current date and financial year
+  //       const now = new Date();
+  //       const currentYear = now.getFullYear();
+  //       const currentMonth = now.getMonth() + 1; // 1-based month (Jan = 1, ..., Dec = 12)
+
+  //       // Calculate financial year
+  //       const financialYearStart =
+  //         currentMonth >= 4 ? currentYear : currentYear - 1;
+  //       const financialYearEnd = financialYearStart + 1;
+  //       const financialYear = `${financialYearStart}-${financialYearEnd
+  //         .toString()
+  //         .slice(-2)}`; // Format: 2024-25
+
+  //       if (snapshot.exists()) {
+  //         const invoices = Object.values(snapshot.val()) as Invoice[];
+  //         const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
+
+  //         if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
+  //           const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
+  //           const lastFY = lastInvoiceParts[1]; // Extract financial year
+  //           const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
+
+  //           if (
+  //             lastFY === financialYear &&
+  //             lastMonth === String(currentMonth).padStart(2, "0")
+  //           ) {
+  //             // Same financial year & month → Increment the last invoice number
+  //             const lastNumber =
+  //               parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
+  //             newInvoiceNumber = lastNumber + 1;
+  //           } else {
+  //             // New month → Restart series from 0001
+  //             newInvoiceNumber = 1;
+  //           }
+  //         } else {
+  //           console.warn(
+  //             "Invalid invoiceNumber format:",
+  //             lastInvoice?.invoiceNumber
+  //           );
+  //         }
+  //       }
+
+  //       // Generate formatted invoice number with financial year
+  //       const formattedInvoiceNumber = `SSE/${financialYear}/${String(
+  //         currentMonth
+  //       ).padStart(2, "0")}-${String(newInvoiceNumber).padStart(4, "0")}`;
+  //       console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
+  //       setInvoiceNumber(formattedInvoiceNumber);
+  //     } catch (error) {
+  //       console.error("Error fetching invoice number:", error);
+  //     }
+  //   };
+
+  //   fetchLastInvoiceNumber();
+  // }, []);
+
   useEffect(() => {
     const fetchLastInvoiceNumber = async () => {
       try {
@@ -180,56 +244,47 @@ export default function NewInvoicePage() {
 
         let newInvoiceNumber = 1; // Default if no invoices exist
 
-        // Get current date and financial year
         const now = new Date();
+        const currentMonth = now.getMonth() + 1;
         const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth() + 1; // 1-based month (Jan = 1, ..., Dec = 12)
 
-        // Calculate financial year
-        const financialYearStart =
-          currentMonth >= 4 ? currentYear : currentYear - 1;
-        const financialYearEnd = financialYearStart + 1;
-        const financialYear = `${financialYearStart}-${financialYearEnd
-          .toString()
-          .slice(-2)}`; // Format: 2024-25
+        // Calculate financial year start and end
+        const fyStart = currentMonth >= 4 ? currentYear : currentYear - 1;
+        const fyEnd = fyStart + 1;
+
+        const fyStartShort = String(fyStart).slice(-2); // e.g., 25
+        const fyEndShort = String(fyEnd).slice(-2); // e.g., 26
+        const financialYear = `${fyStartShort}-${fyEndShort}`;
+
+        const month = String(currentMonth).padStart(2, "0");
 
         if (snapshot.exists()) {
           const invoices = Object.values(snapshot.val()) as Invoice[];
-          const lastInvoice = invoices[invoices.length - 1]; // Get last invoice
+          const filteredInvoices = invoices.filter(
+            (inv) =>
+              typeof inv.invoiceNumber === "string" &&
+              inv.invoiceNumber.startsWith(`SSE/${financialYear}/${month}`)
+          );
 
-          if (lastInvoice && typeof lastInvoice.invoiceNumber === "string") {
-            const lastInvoiceParts = lastInvoice.invoiceNumber.split("/");
-            const lastFY = lastInvoiceParts[1]; // Extract financial year
-            const lastMonth = lastInvoiceParts[2].split("-")[0]; // Extract month
+          if (filteredInvoices.length > 0) {
+            const lastInvoice = filteredInvoices[filteredInvoices.length - 1];
+            const lastParts = lastInvoice.invoiceNumber
+              .split("/")[2]
+              .split("-");
 
-            if (
-              lastFY === financialYear &&
-              lastMonth === String(currentMonth).padStart(2, "0")
-            ) {
-              // Same financial year & month → Increment the last invoice number
-              const lastNumber =
-                parseInt(lastInvoiceParts[2].split("-")[1], 10) || 0;
-              newInvoiceNumber = lastNumber + 1;
-            } else {
-              // New month → Restart series from 0001
-              newInvoiceNumber = 1;
-            }
-          } else {
-            console.warn(
-              "Invalid invoiceNumber format:",
-              lastInvoice?.invoiceNumber
-            );
+            const lastNumber = parseInt(lastParts[1], 10) || 0;
+            newInvoiceNumber = lastNumber + 1;
           }
         }
 
-        // Generate formatted invoice number with financial year
-        const formattedInvoiceNumber = `SSE/${financialYear}/${String(
-          currentMonth
-        ).padStart(2, "0")}-${String(newInvoiceNumber).padStart(4, "0")}`;
-        console.log("Generated Invoice Number:", formattedInvoiceNumber); // Debugging
+        const formattedInvoiceNumber = `SSE/${financialYear}/${month}-${String(
+          newInvoiceNumber
+        ).padStart(3, "0")}`;
+
+        console.log("✅ New Invoice Number:", formattedInvoiceNumber);
         setInvoiceNumber(formattedInvoiceNumber);
       } catch (error) {
-        console.error("Error fetching invoice number:", error);
+        console.error("Error generating invoice number:", error);
       }
     };
 
