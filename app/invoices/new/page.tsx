@@ -253,7 +253,7 @@ export default function NewInvoicePage() {
         const fyEnd = fyStart + 1;
 
         const fyStartShort = String(fyStart).slice(-2); // e.g., 25
-        const fyEndShort = String(fyEnd).slice(-2); // e.g., 26
+        const fyEndShort = String(fyEnd).slice(-2); // e.g., 26s
         const financialYear = `${fyStartShort}-${fyEndShort}`;
 
         const month = String(currentMonth).padStart(2, "0");
